@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop/models/product.dart';
 import 'package:shop/pages/product_detail_page.dart';
 import 'package:shop/utils/routers.dart';
 
 class ProductItem extends StatelessWidget {
-  final Product product;
-
-  ProductItem({required this.product});
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<Product>(context);
+    final Product product = provider;
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
