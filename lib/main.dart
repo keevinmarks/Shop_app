@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/models/cart.dart';
 import 'package:shop/models/product_list.dart';
-import 'package:shop/pages/counter_page.dart';
+import 'package:shop/pages/cart_page.dart';
+import 'package:shop/pages/product_detail_page.dart';
 import 'package:shop/pages/product_overview_page.dart';
-import 'package:shop/providers/counter.dart';
 import 'package:shop/utils/routers.dart';
 
 main() {
@@ -17,8 +18,13 @@ class MyApp extends StatelessWidget {
     //return CounterProvider(
 
     //Envolvendo tudo nesse novo Provider nativo
-    return ChangeNotifierProvider(
-      create: (ctx) => ProductList(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProductList()),
+        ChangeNotifierProvider(create: (_) => Cart()),
+      ],
+      //Aqui é onde criamos o provider que vai disponiblizar a lista de produtos para toda a aplicação
+      //Nessa caso estamos usando o create pois queremos criar uma nova instância do ProductList, ou seja, uma nova lista de produtos
       child: MaterialApp(
         title: "Shop App",
         debugShowCheckedModeBanner: false,
@@ -30,7 +36,8 @@ class MyApp extends StatelessWidget {
         //home: ProductOverviewPage(),
         routes: {
           AppRouters.HOME: (ctx) => ProductOverviewPage(),
-          AppRouters.PRODUCT_DETAIL: (ctx) => CounterPage(),
+          AppRouters.PRODUCT_DETAIL: (ctx) => ProductDetailPage(),
+          AppRouters.CART: (ctx) => CartPage()
         },
       ),
     );
