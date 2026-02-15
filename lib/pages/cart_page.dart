@@ -3,12 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:shop/components/cart_item.dart';
 import 'package:shop/models/cart.dart';
 import 'package:shop/models/cart_item.dart';
+import 'package:shop/models/order_list.dart';
 
 class CartPage extends StatelessWidget {
+  const CartPage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final providerCart = Provider.of<Cart>(context,);
-
+    final providerCart = Provider.of<Cart>(context, listen: true);
     //Para acessar a parte dos valores de um mapa, basta adicionar .values no final, e depois converter para uma lista com o generic correspondente
     final List<CartItem> cartListItems = providerCart.items.values.toList();
 
@@ -17,9 +19,7 @@ class CartPage extends StatelessWidget {
       body: Column(
         children: [
           Card(
-            margin: EdgeInsets.symmetric(
-              vertical: 25, horizontal: 15
-            ),
+            margin: EdgeInsets.symmetric(vertical: 25, horizontal: 15),
 
             child: Padding(
               padding: const EdgeInsets.all(10),
@@ -31,13 +31,19 @@ class CartPage extends StatelessWidget {
                   Chip(
                     backgroundColor: Colors.blue,
                     label: Text(
-                      "R\$${providerCart.totalAmount}",
+                      "R\$${providerCart.totalAmount.toStringAsFixed(2)}",
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
                   Spacer(),
+                  if(!(providerCart.itemsCount <= 0))
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      if(!(providerCart.itemsCount <= 0)){
+                        Provider.of<OrderList>(context, listen: false).addOrder(providerCart);
+                        providerCart.clear();
+                      }
+                    },
                     style: TextButton.styleFrom(
                       textStyle: TextStyle(color: Colors.purple),
                     ),

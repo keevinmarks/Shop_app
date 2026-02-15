@@ -13,9 +13,29 @@ class ProductDetailPage extends StatelessWidget{
         title: Text(product.name),
         centerTitle: true,
       ),
-      body: Center(
-        child: Text("Detalhes do porduto aqui"),
-      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: 300,
+              width: double.infinity,
+              child: Image.asset(product.imageUrl, fit: BoxFit.cover),
+            ),
+            SizedBox(height: 10,),
+            Text("R\$${product.price}",
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.grey
+            ),),
+            SizedBox(height: 10,),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(product.description, textAlign: TextAlign.center,),
+
+            )
+          ],
+        ),
+      )
     );
   }
 }

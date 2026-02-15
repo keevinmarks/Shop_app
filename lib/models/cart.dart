@@ -15,11 +15,11 @@ class Cart with ChangeNotifier {
     return _items.length;
   }
 
-  double get totalAmount{
+  double get totalAmount {
     double sum = 0;
 
     _items.forEach((key, cartItem) {
-      sum += cartItem.price * cartItem.quantity; 
+      sum += cartItem.price * cartItem.quantity;
     });
 
     return sum;
@@ -40,7 +40,7 @@ class Cart with ChangeNotifier {
       _items.putIfAbsent(
         product.id,
         () => CartItem(
-          id: Random().nextInt(2).toString(),
+          id: Random().nextDouble().toString(),
           productId: product.id,
           name: product.name,
           quantity: 1,
@@ -57,6 +57,7 @@ class Cart with ChangeNotifier {
   }
 
   void clear() {
+    print("==================== Chegou aqui ====================");
     _items = {};
     notifyListeners();
   }

@@ -58,7 +58,7 @@ class ProductItem extends StatelessWidget {
               context,
             ).pushNamed(AppRouters.PRODUCT_DETAIL, arguments: product);
           },
-          child: Image.network(product.imageUrl, fit: BoxFit.cover),
+          child: Image.asset(product.imageUrl, fit: BoxFit.cover),
         ),
       ),
     );
