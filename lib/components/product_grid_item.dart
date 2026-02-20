@@ -1,12 +1,17 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/models/cart.dart';
 import 'package:shop/models/product.dart';
+import 'package:shop/models/product_list.dart';
 import 'package:shop/utils/routers.dart';
+import 'package:shop/exceptions/http_exception.dart';
 
 class ProductGridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final msg = ScaffoldMessenger.of(context);
     //Pegando provider do produto, ou seja, o item da lista de produtos
     final providerProduct = Provider.of<Product>(context, listen: false);
     final providerCart = Provider.of<Cart>(context, listen: false);
@@ -22,8 +27,13 @@ class ProductGridItem extends StatelessWidget {
           //Consumer gera um widget que escuta as mudanças do provider, ou seja, quando o isFavorite for alterado, apenas o widget dentro do builder será reconstruído, ou seja, apenas o IconButton será reconstruído, e não todo o GridTileBar
           leading: Consumer<Product>(
             builder: (ctx, product, _) => IconButton(
-              onPressed: () {
-                product.toggleIsFavorite();
+              onPressed: () async {
+                try {
+                  await product.toggleIsFavorite();
+                }on HttpException catch (error) {
+                  
+                  msg.showSnackBar(SnackBar(content: Text(error.toString())));
+                }
               },
               icon: Icon(
                 product.isFavorite ? Icons.favorite : Icons.favorite_border,

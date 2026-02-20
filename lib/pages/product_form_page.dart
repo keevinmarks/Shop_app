@@ -72,14 +72,26 @@ class _ProductFormState extends State<ProductFormPage> {
     return isValidUrl && endWithFile;
   }
 
-  void _submitForm() {
+  //Função que é chamada no submit do formulário
+  Future<void> _submitForm() async {
     setState(() {
       isLoading = true;
     });
     bool isValid = _formKey.currentState?.validate() ?? false;
 
     if (!isValid) {
-      return;
+      return showDialog(context: context, builder: (ctx) => AlertDialog(
+        title: Text("Informações inválidas"),
+        content: Text("Preencha as informações corretamente"),
+        actions: [
+          TextButton(onPressed: (){
+            setState(() {
+              isLoading = false;
+            });
+            Navigator.of(context).pop();
+          }, child: Text("Ok"))
+        ],
+      ));
     }
     _formKey.currentState?.save();
     // final newProduct = Product(
@@ -89,31 +101,58 @@ class _ProductFormState extends State<ProductFormPage> {
     //   price: double.parse(_formData["price"].toString()),
     //   imageUrl: _formData["imageUrl"].toString(),
     // );
-    Provider.of<ProductList>(context, listen: false)
-        .saveProduct(_formData)
-        .catchError((error) {
-          return showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: Text("Ocorreu um erro"),
-              content: Text(error.toString()),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Ok"),
-                ),
-              ],
+    try {
+      await Provider.of<ProductList>(
+        context,
+        listen: false,
+      ).saveProduct(_formData);
+      Navigator.of(context).pop();
+    } catch (error) {
+      await showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text("Ocorreu um erro"),
+            content: Text(
+              "Ocorreu um erro no momento de salvar um produto no banco",
             ),
+            actions: [
+              TextButton(onPressed: (){
+                Navigator.of(context).pop();
+              }, child: Text("Ok"))
+            ],
           );
-        })
-        .then((_) {
-          setState(() {
-            isLoading = false;
-          });
-          Navigator.of(context).pop();
-        });
+        },
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+
+    // .catchError((error) {
+    //   return showDialog(
+    //     context: context,
+    //     builder: (ctx) => AlertDialog(
+    //       title: Text("Ocorreu um erro"),
+    //       content: Text(error.toString()),
+    //       actions: [
+    //         TextButton(
+    //           onPressed: () {
+    //             Navigator.of(context).pop();
+    //           },
+    //           child: Text("Ok"),
+    //         ),
+    //       ],
+    //     ),
+    //   );
+    // })
+    // .then((_) {
+    //   setState(() {
+    //     isLoading = false;
+    //   });
+    //   Navigator.of(context).pop();
+    // });
   }
 
   @override
@@ -154,6 +193,7 @@ class _ProductFormState extends State<ProductFormPage> {
                         if (name.trim().length < 3) {
                           return "O nome precisa ter 3 letras";
                         }
+                        //Retorna nulo para dizer que está tudo ok
                         return null;
                       },
                     ),
@@ -176,6 +216,7 @@ class _ProductFormState extends State<ProductFormPage> {
                       onSaved: (price) {
                         _formData["price"] = double.parse(price ?? "0");
                       },
+                      //Retorna nulo para dizer que está tudo ok
                       validator: (_price) {
                         final price = _price ?? "";
                         if (price.trim().isEmpty) {
@@ -208,6 +249,7 @@ class _ProductFormState extends State<ProductFormPage> {
                       onSaved: (description) {
                         _formData["description"] = description ?? "";
                       },
+                      //Retorna nulo para dizer que está tudo ok
                       validator: (_description) {
                         final description = _description ?? "";
 
@@ -239,6 +281,7 @@ class _ProductFormState extends State<ProductFormPage> {
                             onSaved: (urlImage) {
                               _formData["imageUrl"] = urlImage ?? "";
                             },
+                            //Retorna nulo para dizer que está tudo ok
                             validator: (_url) {
                               final url = _url ?? "";
 
