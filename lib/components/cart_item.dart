@@ -10,7 +10,7 @@ class CartItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dismissible(  
+    return Dismissible(
       key: ValueKey(cartItem.id),
       direction: DismissDirection.startToEnd,
       background: Container(
@@ -20,6 +20,35 @@ class CartItemWidget extends StatelessWidget {
         margin: EdgeInsets.symmetric(vertical: 4, horizontal: 15),
         child: Icon(Icons.delete, color: Colors.white, size: 40),
       ),
+      //O confirmDimiss retorna um Future<bool>
+      confirmDismiss: (_) {
+        //Componente que retorna um Future<T>
+        return showDialog<bool>(
+          context: context,
+          builder: (ctx) {
+            return AlertDialog(
+              title: Text("Tem certeza ?"),
+              content: Text("Quer mesmo remover isso item do carrinho"),
+              actions: [
+                TextButton(
+                  child: Text("Não"),
+                  onPressed: () {
+                    //Passando um valor ao fechar destruir componente
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+                TextButton(
+                  child: Text("Sim"),
+                  onPressed: () {
+                    //Passando um valor ao fechar destruir componente
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
       onDismissed: (direction) {
         Provider.of<Cart>(
           context,

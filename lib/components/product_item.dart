@@ -1,64 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop/models/cart.dart';
 import 'package:shop/models/product.dart';
+import 'package:shop/models/product_list.dart';
 import 'package:shop/utils/routers.dart';
 
 class ProductItem extends StatelessWidget {
+  final Product product;
+
+  const ProductItem(this.product, {super.key});
+
   @override
   Widget build(BuildContext context) {
-    //Pegando provider do produto, ou seja, o item da lista de produtos
-    final providerProduct = Provider.of<Product>(context, listen: false);
-    final providerCart = Provider.of<Cart>(context, listen: false);
-    //Deixando o listen como false, o provider não será mais atualizado quando o produto for atualizado, ou seja, quando o isFavorite for alterado, o widget não será reconstruído, apenas o widget que tem o provider do produto como pai, ou seja, o ProductGrid, será reconstruído, mas ainda é possivel utilizar o provider para acessar os dados do produto, como o title, imageUrl, etc, mas não será possível acessar o isFavorite, pois ele não será atualizado, ou seja, não será reconstruído quando o isFavorite for alterado
-    final Product product = providerProduct;
-    final Cart cart = providerCart;
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: GridTile(
-        footer: GridTileBar(
-          backgroundColor: Colors.black87,
-          //Consumer gera um widget que escuta as mudanças do provider, ou seja, quando o isFavorite for alterado, apenas o widget dentro do builder será reconstruído, ou seja, apenas o IconButton será reconstruído, e não todo o GridTileBar
-          leading: Consumer<Product>(
-            builder: (ctx, product, _) => IconButton(
+    return ListTile(
+      leading: CircleAvatar(backgroundImage: NetworkImage(product.imageUrl)),
+      title: Text(product.name),
+      trailing: Container(
+        width: 100,
+        child: Row(
+          children: [
+            IconButton(
               onPressed: () {
-                product.toggleIsFavorite();
+                Navigator.of(
+                  context,
+                ).pushNamed(AppRouters.PRODUCTS_FORM, arguments: product);
               },
-              icon: Icon(
-                product.isFavorite ? Icons.favorite : Icons.favorite_border,
-              ),
-              color: Theme.of(context).colorScheme.secondary,
+              icon: Icon(Icons.edit),
+              color: Colors.blue,
             ),
-          ),
-          title: Text(
-            product.name,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: Theme.of(context).textTheme.bodyMedium?.fontFamily,
+            IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) {
+                    return AlertDialog(
+                      title: Text("Tem certeza disso ?"),
+                      content: Text("Confirme a exlusão do produto"),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Cancelar"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Provider.of<ProductList>(
+                              context, listen: false
+                            ).removeProduct(product);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Confirmar"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              icon: Icon(Icons.delete),
+              color: Colors.red,
             ),
-          ),
-          trailing: IconButton(
-            onPressed: () {
-              cart.addItem(product);
-            },
-            icon: Icon(Icons.shopping_cart),
-            color: Theme.of(context).colorScheme.secondary,
-          ),
-        ),
-        child: GestureDetector(
-          onTap: () {
-            // Navigator.of(context).push(
-            //   MaterialPageRoute(
-            //     builder: (ctx) => ProductDetailPage(),
-            //   ),
-            // );
-
-            Navigator.of(
-              context,
-            ).pushNamed(AppRouters.PRODUCT_DETAIL, arguments: product);
-          },
-          child: Image.asset(product.imageUrl, fit: BoxFit.cover),
+          ],
         ),
       ),
     );

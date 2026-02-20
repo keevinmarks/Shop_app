@@ -6,7 +6,9 @@ import 'package:shop/models/product_list.dart';
 import 'package:shop/pages/cart_page.dart';
 import 'package:shop/pages/orders_page.dart';
 import 'package:shop/pages/product_detail_page.dart';
+import 'package:shop/pages/product_form_page.dart';
 import 'package:shop/pages/product_overview_page.dart';
+import 'package:shop/pages/product_page.dart';
 import 'package:shop/utils/routers.dart';
 
 main() {
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ProductList()),
         ChangeNotifierProvider(create: (_) => Cart()),
-        ChangeNotifierProvider(create: (ctx) => OrderList(),)
+        ChangeNotifierProvider(create: (_) => OrderList(),)
       ],
       //Aqui é onde criamos o provider que vai disponiblizar a lista de produtos para toda a aplicação
       //Nessa caso estamos usando o create pois queremos criar uma nova instância do ProductList, ou seja, uma nova lista de produtos
@@ -41,7 +43,9 @@ class MyApp extends StatelessWidget {
           AppRouters.HOME: (ctx) => ProductOverviewPage(),
           AppRouters.PRODUCT_DETAIL: (ctx) => ProductDetailPage(),
           AppRouters.CART: (ctx) => CartPage(),
-          AppRouters.ORDERS: (ctx) => OrdersPage()
+          AppRouters.ORDERS: (ctx) => OrdersPage(),
+          AppRouters.PRODUCTS: (ctx) => ProductPage(),
+          AppRouters.PRODUCTS_FORM: (ctx) => ProductFormPage()
         },
       ),
     );

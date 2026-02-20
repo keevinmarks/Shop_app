@@ -12,6 +12,7 @@ class ProductDetailPage extends StatelessWidget{
       appBar: AppBar(
         title: Text(product.name),
         centerTitle: true,
+        backgroundColor: Colors.blue.shade200,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -19,7 +20,7 @@ class ProductDetailPage extends StatelessWidget{
             Container(
               height: 300,
               width: double.infinity,
-              child: Image.asset(product.imageUrl, fit: BoxFit.cover),
+              child: Image.network(product.imageUrl, fit: BoxFit.cover),
             ),
             SizedBox(height: 10,),
             Text("R\$${product.price}",

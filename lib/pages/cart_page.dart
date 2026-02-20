@@ -15,7 +15,11 @@ class CartPage extends StatelessWidget {
     final List<CartItem> cartListItems = providerCart.items.values.toList();
 
     return Scaffold(
-      appBar: AppBar(title: Text("Carrinho de compras"), centerTitle: true),
+      appBar: AppBar(
+        title: Text("Carrinho de compras"),
+        centerTitle: true,
+        backgroundColor: Colors.blue.shade200,
+      ),
       body: Column(
         children: [
           Card(
@@ -36,19 +40,22 @@ class CartPage extends StatelessWidget {
                     ),
                   ),
                   Spacer(),
-                  if(!(providerCart.itemsCount <= 0))
-                  TextButton(
-                    onPressed: () {
-                      if(!(providerCart.itemsCount <= 0)){
-                        Provider.of<OrderList>(context, listen: false).addOrder(providerCart);
-                        providerCart.clear();
-                      }
-                    },
-                    style: TextButton.styleFrom(
-                      textStyle: TextStyle(color: Colors.purple),
+                  if (!(providerCart.itemsCount <= 0))
+                    TextButton(
+                      onPressed: () {
+                        if (!(providerCart.itemsCount <= 0)) {
+                          Provider.of<OrderList>(
+                            context,
+                            listen: false,
+                          ).addOrder(providerCart);
+                          providerCart.clear();
+                        }
+                      },
+                      style: TextButton.styleFrom(
+                        textStyle: TextStyle(color: Colors.purple),
+                      ),
+                      child: Text("COMPRAR"),
                     ),
-                    child: Text("COMPRAR"),
-                  ),
                 ],
               ),
             ),

@@ -16,7 +16,7 @@ class _CounterPageState extends State<CounterPage> {
 
     final provider = CounterProvider.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text("Counter page"), centerTitle: true),
+      appBar: AppBar(title: Text("Counter page"), centerTitle: true, backgroundColor: Colors.blue.shade200,),
       body: Center(
         child: Column(
           children: [
