@@ -76,7 +76,6 @@ class Cart with ChangeNotifier {
   }
 
   void clear() {
-    print("==================== Chegou aqui ====================");
     _items = {};
     notifyListeners();
   }

@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/components/cart_item.dart';
+import 'package:shop/exceptions/http_exception.dart';
 import 'package:shop/models/cart.dart';
 import 'package:shop/models/cart_item.dart';
 import 'package:shop/models/order_list.dart';
 
-class CartPage extends StatelessWidget {
+class CartPage extends StatefulWidget {
   const CartPage({super.key});
 
+  @override
+  State<CartPage> createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     final providerCart = Provider.of<Cart>(context, listen: true);
     //Para acessar a parte dos valores de um mapa, basta adicionar .values no final, e depois converter para uma lista com o generic correspondente
     final List<CartItem> cartListItems = providerCart.items.values.toList();
+    final msg = ScaffoldMessenger.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -40,22 +48,37 @@ class CartPage extends StatelessWidget {
                     ),
                   ),
                   Spacer(),
-                  if (!(providerCart.itemsCount <= 0))
-                    TextButton(
-                      onPressed: () {
-                        if (!(providerCart.itemsCount <= 0)) {
-                          Provider.of<OrderList>(
-                            context,
-                            listen: false,
-                          ).addOrder(providerCart);
-                          providerCart.clear();
-                        }
-                      },
-                      style: TextButton.styleFrom(
-                        textStyle: TextStyle(color: Colors.purple),
-                      ),
-                      child: Text("COMPRAR"),
+                  TextButton(
+                    onPressed: providerCart.itemsCount == 0
+                        ? null
+                        : () async {
+                            try {
+                              if (!(providerCart.itemsCount <= 0)) {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                await Provider.of<OrderList>(
+                                  context,
+                                  listen: false,
+                                ).addOrder(providerCart);
+                                providerCart.clear();
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            } on HttpException catch (error) {
+                              msg.showSnackBar(
+                                SnackBar(content: Text(error.msg)),
+                              );
+                            }
+                          },
+                    style: TextButton.styleFrom(
+                      textStyle: TextStyle(color: Colors.purple),
                     ),
+                    child: isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : Text("COMPRAR"),
+                  ),
                 ],
               ),
             ),

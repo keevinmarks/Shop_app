@@ -31,7 +31,6 @@ class ProductGridItem extends StatelessWidget {
                 try {
                   await product.toggleIsFavorite();
                 }on HttpException catch (error) {
-                  
                   msg.showSnackBar(SnackBar(content: Text(error.toString())));
                 }
               },

@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ProductList()),
         ChangeNotifierProvider(create: (_) => Cart()),
-        ChangeNotifierProvider(create: (_) => OrderList(),)
+        ChangeNotifierProvider(create: (_) => OrderList()),
       ],
       //Aqui é onde criamos o provider que vai disponiblizar a lista de produtos para toda a aplicação
       //Nessa caso estamos usando o create pois queremos criar uma nova instância do ProductList, ou seja, uma nova lista de produtos
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
           AppRouters.CART: (ctx) => CartPage(),
           AppRouters.ORDERS: (ctx) => OrdersPage(),
           AppRouters.PRODUCTS: (ctx) => ProductPage(),
-          AppRouters.PRODUCTS_FORM: (ctx) => ProductFormPage()
+          AppRouters.PRODUCTS_FORM: (ctx) => ProductFormPage(),
         },
       ),
     );
