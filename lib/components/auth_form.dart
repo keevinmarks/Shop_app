@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop/models/auth.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -15,7 +17,7 @@ class _AuthFormState extends State<AuthForm> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  void _submit() {
+  Future<void> _submit() async {
     //Essa função valida os campos do formulário (retornando verdadeiro ou falso):
     final isValid = _formKey.currentState?.validate() ?? false;
 
@@ -26,10 +28,12 @@ class _AuthFormState extends State<AuthForm> {
     //Essa função executa a função onSaved do formulário em todos os campos
     _formKey.currentState?.save();
 
-    if(isLogin()){
+    final auth = Provider.of<Auth>(context);
+
+    if (isLogin()) {
       //Login
-    }else{
-      //Registrar
+    } else {
+      await auth.signup(_authData["email"]!, _authData["password"]!);
     }
 
     setState(() => _isLoading = false);
