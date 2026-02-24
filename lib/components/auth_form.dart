@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/exceptions/auth_exception.dart';
 import 'package:shop/models/auth.dart';
 
 enum AuthMode { Signup, Login }
@@ -17,6 +18,26 @@ class _AuthFormState extends State<AuthForm> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  _showErrorDialog(String msg) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text("Ocorreu um erro"),
+          content: Text(msg),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Fechar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _submit() async {
     //Essa função valida os campos do formulário (retornando verdadeiro ou falso):
     final isValid = _formKey.currentState?.validate() ?? false;
@@ -28,12 +49,17 @@ class _AuthFormState extends State<AuthForm> {
     //Essa função executa a função onSaved do formulário em todos os campos
     _formKey.currentState?.save();
 
-    final auth = Provider.of<Auth>(context);
-
-    if (isLogin()) {
-      //Login
-    } else {
-      await auth.signup(_authData["email"]!, _authData["password"]!);
+    final auth = Provider.of<Auth>(context, listen: false);
+    try {
+      if (isLogin()) {
+        await auth.login(_authData["email"]!, _authData["password"]!);
+      } else {
+        await auth.signup(_authData["email"]!, _authData["password"]!);
+      }
+    } on AuthException catch (error) {
+      _showErrorDialog(error.toString());
+    }catch(error){
+      _showErrorDialog("Ocorreu um erro inesperado!");
     }
 
     setState(() => _isLoading = false);
