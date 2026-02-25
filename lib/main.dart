@@ -4,12 +4,11 @@ import 'package:shop/models/auth.dart';
 import 'package:shop/models/cart.dart';
 import 'package:shop/models/order_list.dart';
 import 'package:shop/models/product_list.dart';
-import 'package:shop/pages/auth_page.dart';
+import 'package:shop/pages/auth_or_home_page.dart';
 import 'package:shop/pages/cart_page.dart';
 import 'package:shop/pages/orders_page.dart';
 import 'package:shop/pages/product_detail_page.dart';
 import 'package:shop/pages/product_form_page.dart';
-import 'package:shop/pages/product_overview_page.dart';
 import 'package:shop/pages/product_page.dart';
 import 'package:shop/utils/routers.dart';
 
@@ -26,10 +25,18 @@ class MyApp extends StatelessWidget {
     //Envolvendo tudo nesse novo Provider nativo
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ProductList()),
+        ChangeNotifierProvider(create: (_) => Auth()),
+        ChangeNotifierProxyProvider<Auth, ProductList>(
+          create: (_) => ProductList(),
+          update: (ctx, auth, previos) =>
+              ProductList(auth.token ?? "", previos?.items ?? [], auth.userId ?? ""),
+        ),
         ChangeNotifierProvider(create: (_) => Cart()),
-        ChangeNotifierProvider(create: (_) => OrderList()),
-        ChangeNotifierProvider(create: (_) => Auth())
+        ChangeNotifierProxyProvider<Auth, OrderList>(
+          create: (_) => OrderList(),
+          update: (ctx, auth, previos) =>
+              OrderList(auth.token ?? "", previos?.orders ?? [], auth.userId ?? ""),
+        ),
       ],
       //Aqui é onde criamos o provider que vai disponiblizar a lista de produtos para toda a aplicação
       //Nessa caso estamos usando o create pois queremos criar uma nova instância do ProductList, ou seja, uma nova lista de produtos
@@ -43,8 +50,8 @@ class MyApp extends StatelessWidget {
         ),
         //home: ProductOverviewPage(),
         routes: {
-          AppRouters.AUTH: (ctx) => AuthPage(),
-          AppRouters.HOME: (ctx) => ProductOverviewPage(),
+          AppRouters.AUTH_OR_HOME: (ctx) => AuthOrHomePage(),
+          //AppRouters.HOME: (ctx) => ProductOverviewPage(),
           AppRouters.PRODUCT_DETAIL: (ctx) => ProductDetailPage(),
           AppRouters.CART: (ctx) => CartPage(),
           AppRouters.ORDERS: (ctx) => OrdersPage(),

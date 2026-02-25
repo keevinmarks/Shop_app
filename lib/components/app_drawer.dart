@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop/models/auth.dart';
 import 'package:shop/utils/routers.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final Auth auth = Provider.of(context, listen: false);
     return Drawer(
       child: Column(
         children: [
@@ -16,7 +19,7 @@ class AppDrawer extends StatelessWidget {
             leading: Icon(Icons.shopping_bag),
             title: Text("Loja"),
             onTap: () {
-              Navigator.of(context).pushReplacementNamed(AppRouters.HOME);
+              Navigator.of(context).pushReplacementNamed(AppRouters.AUTH_OR_HOME);
             },
           ),
           Divider(height: 1, color: Colors.grey.shade300,),
@@ -35,6 +38,15 @@ class AppDrawer extends StatelessWidget {
               Navigator.of(context).pushReplacementNamed(AppRouters.PRODUCTS);
             },
           ),
+          Divider(height: 1, color: Colors.grey.shade300),
+          ListTile(
+            leading: Icon(Icons.logout),
+            title: Text("Sair"),
+            onTap: () {
+              auth.logout();
+              Navigator.of(context).pushReplacementNamed(AppRouters.AUTH_OR_HOME);
+            },
+          )
         ],
       ),
     );

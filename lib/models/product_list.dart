@@ -8,8 +8,12 @@ import 'package:shop/exceptions/http_exception.dart';
 import 'package:shop/models/product.dart';
 
 class ProductList with ChangeNotifier {
+  final String _token;
+  final String _userId;
   List<Product> _items = [];
 
+  //Entre colchetes [] para parâmetros opcionais e chaves {} para parâmetros posicionais
+  ProductList([this._token = "", this._items = const [], this._userId = ""]);
   List<Product> get items {
     return [..._items];
   }
@@ -24,10 +28,22 @@ class ProductList with ChangeNotifier {
 
   Future<void> loadingProducts() async {
     _items.clear();
-    final response = await http.get(Uri.parse("${Constants.PRODUCTS_BASE_URL}.json"));
+    final response = await http.get(
+      Uri.parse("${Constants.PRODUCTS_BASE_URL}.json?auth=$_token"),
+    );
     if (response.body == "null") return;
+    final responseFavoriteItems = await http.get(
+      Uri.parse("${Constants.USER_FAVORITE_URL}/$_userId.json?auth=$_token"),
+    );
+
+    Map<String, dynamic> favData = responseFavoriteItems.body == "null"
+        ? {}
+        : jsonDecode(responseFavoriteItems.body);
+
+
     Map<String, dynamic> responseData = jsonDecode(response.body);
     responseData.forEach((productId, productData) {
+      final isFavorite = favData[productId] ?? false;
       _items.add(
         Product(
           id: productId,
@@ -35,10 +51,12 @@ class ProductList with ChangeNotifier {
           description: productData["description"],
           price: productData["price"],
           imageUrl: productData["imageUrl"],
-          isFavorite: productData["isFavorite"],
+          isFavorite: isFavorite
         ),
       );
     });
+
+    print(responseFavoriteItems.body);
     notifyListeners();
   }
 
@@ -66,7 +84,6 @@ class ProductList with ChangeNotifier {
   //       Uri.parse("${Constants.PRODUCTS_BASE_URL}/${product.id}.json"),
   //       body: jsonEncode({"isFavorite": product.isFavorite}),
   //     );
-      
 
   //     if(response.statusCode >= 400){
   //       throw HttpException(msg: "Ocorreu um erro ao favoritar", httpCode: response.statusCode);
@@ -79,7 +96,9 @@ class ProductList with ChangeNotifier {
     int index = _items.indexWhere((p) => p.id == product.id);
 
     await http.patch(
-      Uri.parse("${Constants.PRODUCTS_BASE_URL}/${product.id}.json"),
+      Uri.parse(
+        "${Constants.PRODUCTS_BASE_URL}/${product.id}.json?auth=$_token",
+      ),
       body: jsonEncode({
         "name": product.name,
         "description": product.description,
@@ -98,13 +117,12 @@ class ProductList with ChangeNotifier {
   //Métodos assincronos precisam retornar Futures<>
   Future<void> addProduct(Product product) async {
     final response = await http.post(
-      Uri.parse("${Constants.PRODUCTS_BASE_URL}.json"),
+      Uri.parse("${Constants.PRODUCTS_BASE_URL}.json?auth=$_token"),
       body: jsonEncode({
         "name": product.name,
         "description": product.description,
         "price": product.price,
         "imageUrl": product.imageUrl,
-        "isFavorite": product.isFavorite,
       }),
     );
 
@@ -116,7 +134,6 @@ class ProductList with ChangeNotifier {
         description: product.description,
         price: product.price,
         imageUrl: product.imageUrl,
-        isFavorite: product.isFavorite,
       ),
     );
     //Adicionando um evento de listeners de notificação para quando o state mudar
@@ -129,7 +146,11 @@ class ProductList with ChangeNotifier {
     if (index >= 0) {
       Product productBackup = _items[index];
       _items.remove(productBackup);
-      final response = await http.delete(Uri.parse("${Constants.PRODUCTS_BASE_URL}/${product.id}.json"));
+      final response = await http.delete(
+        Uri.parse(
+          "${Constants.PRODUCTS_BASE_URL}/${product.id}.json?auth=$_token",
+        ),
+      );
       if (response.statusCode >= 400) {
         _items.insert(index, productBackup);
         notifyListeners();

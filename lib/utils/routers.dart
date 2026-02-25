@@ -1,6 +1,6 @@
 class AppRouters {
-  static final AUTH = "/";
-  static final HOME = "/home";
+  static final AUTH_OR_HOME = "/";
+  //static final HOME = "/home";
   static final PRODUCT_DETAIL = "/product-detail";
   static final CART = "/cart";
   static final ORDERS = "/orders";
