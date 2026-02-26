@@ -32,4 +32,9 @@ class Store {
     final prefs = await SharedPreferences.getInstance();
     return prefs.remove(key);
   }
+
+  static Future<bool> clear() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.clear();
+  }
 }
