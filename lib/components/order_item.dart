@@ -14,27 +14,33 @@ class _OrderItemState extends State<OrderItem> {
   bool _expanded = false;
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: [
-          ListTile(
-            title: Text("R\$${widget.order.total.toStringAsFixed(2)}"),
-            subtitle: Text(
-              DateFormat("dd/MM/yyyy hh:mm").format(widget.order.date),
+    final itemsHeight = (widget.order.products.length * 24.0) + 20;
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 300),
+      height: _expanded ? itemsHeight + 80 : 80,
+      curve: Curves.linear,
+      child: Card(
+        child: Column(
+          children: [
+            ListTile(
+              title: Text("R\$${widget.order.total.toStringAsFixed(2)}"),
+              subtitle: Text(
+                DateFormat("dd/MM/yyyy hh:mm").format(widget.order.date),
+              ),
+              trailing: IconButton(
+                onPressed: () {
+                  setState(() {
+                    _expanded = !_expanded;
+                  });
+                },
+                icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
+              ),
             ),
-            trailing: IconButton(
-              onPressed: () {
-                setState(() {
-                  _expanded = !_expanded;
-                });
-              },
-              icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
-            ),
-          ),
-          if (_expanded)
-            Container(
+            AnimatedContainer(
+              duration: Duration(milliseconds: 300),
+              curve: Curves.linear,
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-              height: (widget.order.products.length * 24.0) + 20,
+              height: _expanded ? itemsHeight : 0,
               child: ListView(
                 children: widget.order.products.map((product) {
                   return Row(
@@ -49,17 +55,15 @@ class _OrderItemState extends State<OrderItem> {
                       ),
                       Text(
                         "${product.quantity}x R\$${product.price}",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey
-                        ),
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
                       ),
                     ],
                   );
                 }).toList(),
               ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }
